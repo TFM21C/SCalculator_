@@ -1,0 +1,859 @@
+/* Allgemeines Layout */
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.hidden {
+  display: none !important; /* Klassische Methode, um Elemente unsichtbar zu machen */
+}
+
+header button {
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+header button:hover {
+  background-color: #d6d6d6;
+  transform: scale(1.1);
+}
+
+/* Hauptlayout */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Buttons im Hauptmenü */
+main button {
+  margin: 1rem;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  color: #4d4d4d;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease-in-out;
+}
+
+main button:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Menü*/
+/* Menü-Overlay */
+#menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9;
+  display: none;
+}
+
+#menu-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  z-index: 10;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#menu-content {
+  padding: 1rem;
+}
+
+#menu-content h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+#menu-content .navigation {
+  list-style-type: none;
+  padding: 0;
+}
+
+#menu-content .navigation li {
+  margin: 1rem 0;
+}
+
+#menu-content .navigation button {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+#menu-content .navigation button:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+}
+
+.menu-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-close-btn:hover {
+  background-color: #007bff;
+}
+/* ==================================================
+   Verlauf Dropdown (Historie)
+   ================================================== */
+#history-panel {
+  position: absolute; /* Damit es über den Inhalten liegt */
+  top: 60px; /* Direkt unter dem Header – ggf. anpassen */
+  right: 20px; /* Rechtsbündig, anpassbar */
+  width: 300px;
+  max-height: 0; /* Anfangs versteckt */
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.3s ease; /* Für den Slide-Effekt */
+  z-index: 100; /* Damit es über anderen Elementen liegt */
+}
+
+/* Sichtbar geschaltete Version */
+#history-panel.show {
+  max-height: 400px; /* Angepasste Höhe – so weit wie benötigt */
+}
+
+/* Falls du den Button optisch anpassen möchtest */
+#toggle-history-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#toggle-history-btn:hover {
+  background-color: #45a049;
+}
+
+/* Verlauf */
+#history-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+  padding: 1rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+#history-panel h2 {
+  margin: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+#history-list li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+#clear-history-btn {
+  width: 100%;
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+#clear-history-btn:hover {
+  background-color: #d32f2f;
+}
+/* Versteckt Elemente mit .hidden */
+.hidden {
+  display: none !important;
+}
+/* Schnelle Kalkulation */
+#quick-calc-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+  min-height: 95vh; /* Anstelle einer fixen Höhe */
+}
+
+#quick-calc-view h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Eingabefelder */
+.calc-inputs {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.calc-inputs label {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  text-align: left;
+}
+
+.calc-inputs input {
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transition: all 0.3s ease;
+}
+
+.calc-inputs input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: inset 2px 2px 5px #c1c1c1, inset -2px -2px 5px #ffffff;
+}
+
+/* Buttons */
+.calc-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.calc-buttons button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  color: #4d4d4d;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.calc-buttons button:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Taschenrechner-Wrapper */
+#keypad-area {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 15px;
+  width: 300px;
+  background-color: #2c3e50;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  margin: auto;
+}
+
+/* Vordefinierte Zahlen */
+.preset-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.preset-values button {
+  background-color: #34495e;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.preset-values button:hover {
+  background-color: #3b5998;
+}
+
+/* Eingabefelder */
+.calc-inputs {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.calc-inputs input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid #34495e;
+  background-color: #2c3e50;
+  color: #ffffff;
+  box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.calc-inputs input::placeholder {
+  color: #95a5a6;
+}
+
+/* Taschenrechner-Tasten */
+#keypad-area-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+#keypad-area-buttons button {
+  background-color: #34495e;
+  color: #ffffff;
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#keypad-area-buttons button:hover {
+  background-color: #3b5998;
+}
+
+/* Besondere Tasten */
+#keypad-area-buttons button.equal {
+  background-color: #1abc9c;
+}
+
+#keypad-area-buttons button.equal:hover {
+  background-color: #16a085;
+}
+
+#keypad-area-buttons button.clear {
+  background-color: #e74c3c;
+}
+
+#keypad-area-buttons button.clear:hover {
+  background-color: #c0392b;
+}
+.realtime-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.realtime-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.realtime-toggle label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Ausgeblendete Buttons in Schnelle Kalkulation */
+#do-quick-add {
+  display: none;
+}
+#btn3 {
+  display: none;
+}
+#btn2 {
+  display: none;
+}
+/* Wrapper für den Schieberegler */
+.realtime-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.preset-values_second {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.preset-values_second button {
+  background-color: #34495e;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.preset-values_second button:hover {
+  background-color: #3b5998;
+}
+.advanced-options {
+  display: flex;
+  flex-direction: column; /* Richtet die Buttons vertikal aus */
+  align-items: center; /* Zentriert die Buttons horizontal */
+  gap: 1rem; /* Abstand zwischen den Buttons */
+  margin-top: 2rem; /* Abstand nach oben */
+}
+
+.advanced-options button {
+  width: 200px; /* Einheitliche Breite der Buttons */
+  text-align: center; /* Zentriert den Text im Button */
+  padding: 1rem;
+  font-size: 1.2rem;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  background-color: #ffffff;
+  color: #4d4d4d;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.advanced-options button:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Box-Stil für Schnelle Kalkulation */
+/* Auswahlseite Box-Layout */
+#quick-calc-choice-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+  max-width: 600px;
+}
+
+#quick-calc-choice-view h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #4d4d4d;
+}
+
+#quick-calc-choice-view p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.choice-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.choice-buttons .calc-option {
+  padding: 1rem;
+  font-size: 1.2rem;
+  background-color: #ffffff;
+  color: #4d4d4d;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.choice-buttons .calc-option:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transform: translateY(-2px);
+}
+
+.choice-buttons .calc-option.active {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+#close-choice-view {
+  margin-top: 2rem;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  background-color: #f44336;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  transition: background-color 0.3s;
+}
+
+#close-choice-view:hover {
+  background-color: #d32f2f;
+}
+
+#quick-calc-view {
+  display: flex; /* Flexbox-Layout */
+  flex-direction: column; /* Vertikale Anordnung */
+  justify-content: center; /* Zentriert vertikal */
+  align-items: center; /* Zentriert horizontal */
+  height: 95vh; /* Höhe der Ansicht */
+}
+#close-quick-calc {
+  display: block; /* Block-Level für bessere Kontrolle */
+  margin: 2rem auto; /* Zentriert horizontal */
+  padding: 1rem 2rem; /* Zusätzlicher Platz für den Button */
+  background-color: #3b5998; /* Hintergrundfarbe */
+  color: rgb(14, 13, 13); /* Textfarbe */
+  font-size: 1rem; /* Schriftgröße */
+  border: none; /* Keine Rahmenlinie */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeigt Klickbarkeit an */
+  transition: background-color 0.3s; /* Hover-Effekt */
+}
+
+#close-quick-calc:hover {
+  background-color: #3b5998; /* Dunkleres Rot beim Hover */
+}
+#advanced-calc-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+}
+
+.centered-header {
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 2rem;
+  color: #4d4d4d;
+}
+
+#matrix-calc-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+}
+
+#matrix-calc-view h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.questionnaire {
+  display: grid;
+  grid-template-columns: 1fr; /* Eine Spalte */
+  gap: 1rem; /* Abstand zwischen den Feldern */
+  margin-bottom: 2rem;
+}
+
+.questionnaire label {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.questionnaire input {
+  width: 100%; /* Volle Breite der Spalte */
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transition: all 0.3s ease;
+}
+
+.questionnaire input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: inset 2px 2px 5px #c1c1c1, inset -2px -2px 5px #ffffff;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.form-buttons button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+  color: #4d4d4d;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.form-buttons button:hover {
+  box-shadow: inset 2px 2px 5px #d1d1d1, inset -2px -2px 5px #ffffff;
+  transform: translateY(-2px);
+}
+
+.tables {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+#back-to-advanced-calc {
+  display: block;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #3b5998;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#back-to-advanced-calc:hover {
+  background-color: #2b4788;
+}
+/* ... dein bestehender CSS-Code (Header, quick calc etc.) ... */
+
+/* ==================================================
+   Listen-View – Übersicht
+   ================================================== */
+#list-view {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+}
+
+#lists-overview {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#lists-overview li {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#lists-overview li:hover {
+  background-color: #f0f0f0;
+}
+
+/* ==================================================
+     Listen-Detail View – Detailansicht
+     ================================================== */
+#list-detail-view {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #e0e0e0, -10px -10px 30px #ffffff;
+}
+
+#list-detail-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+#list-detail-container th,
+#list-detail-container td {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: center;
+}
+
+#list-detail-container th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+/* Der erste (initiale) Eintrag in der Liste fett anzeigen */
+#list-detail-container tbody tr:first-child {
+  font-weight: bold;
+}
+/* Wrapper für Standard-Felder in QuickCalc (Cash, Preis je, Ergebnis) */
+#sk-standard-fields {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Zusätzliche Felder für "Liste bearbeiten" */
+#list-update-inputs.hidden {
+  display: none;
+}
+/* Back Button in der Listen-Detail View */
+#back-to-lists-btn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  background-color: #3b5998;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#back-to-lists-btn:hover {
+  background-color: #2b4788;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* sollte hoch genug sein */
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

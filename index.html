@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Taschenrechner Pro</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+    <header>
+      <button id="burger-menu-btn">☰</button>
+      <button id="toggle-history-btn">Verlauf anzeigen</button>
+      <button id="login-btn">Login</button>
+    </header>
+
+    <!-- ==================================================
+         BURGER MENÜ (NAVIGATION)
+         ================================================== -->
+    <aside id="menu-panel" class="hidden">
+      <div id="menu-overlay" class="hidden"></div>
+      <div id="menu-content">
+        <button id="close-menu-btn" class="menu-close-btn">X</button>
+        <h2>Menü</h2>
+        <nav>
+          <ul class="navigation">
+            <li><button id="home-nav">Startseite</button></li>
+            <li><button id="quick-calc-nav">Schnelle Kalkulation</button></li>
+            <li>
+              <button id="advanced-calc-nav">Erweiterte Kalkulation</button>
+            </li>
+            <li><button id="matrix-calc-nav">Matrix-Kalkulation</button></li>
+            <li><button id="stat-calc-nav">Statistische Berechnung</button></li>
+            <li><button id="financial-calc-nav">Finanzberechnung</button></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- ==================================================
+         MAIN VIEW: STARTSEITE
+         ================================================== -->
+    <main id="home-view">
+      <button id="quick-calc-btn">Schnelle Kalkulation</button>
+      <button id="advanced-calc-btn">Erweiterte Kalkulation</button>
+      <button id="load-op-btn">Operation laden</button>
+    </main>
+
+    <!-- ==================================================
+         MODALE ELEMENTE
+         ================================================== -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden">
+      <form id="login-form">
+        <label for="username">Nutzername:</label>
+        <input type="text" id="username" name="username" />
+        <label for="password">Passwort:</label>
+        <input type="password" id="password" name="password" />
+        <button type="submit">Einloggen</button>
+      </form>
+    </div>
+
+    <!-- List Modal: "In Liste aufnehmen" -->
+    <div id="list-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>In welche Liste aufnehmen?</h3>
+        <p>Wähle eine Option:</p>
+        <div class="modal-options">
+          <button id="new-list-btn">Neue Liste erstellen</button>
+          <button id="choose-list-btn">Bestehende Liste auswählen</button>
+        </div>
+        <div id="new-list-form" class="hidden">
+          <label for="new-list-name">Listenname:</label>
+          <input type="text" id="new-list-name" placeholder="Name der Liste" />
+          <button id="create-list-confirm-btn">Liste erstellen</button>
+        </div>
+        <div id="existing-list-form" class="hidden">
+          <label for="existing-list-select">Liste wählen:</label>
+          <select id="existing-list-select"></select>
+          <button id="choose-list-confirm-btn">Liste übernehmen</button>
+        </div>
+        <button id="list-modal-close-btn">Schließen</button>
+      </div>
+    </div>
+
+    <!-- ==================================================
+         VIEWS
+         ================================================== -->
+    <!-- Listen-Übersicht View -->
+    <section id="list-view" class="hidden">
+      <h2>Meine Listen</h2>
+      <ul id="lists-overview">
+        <!-- Dynamisch generierte Listeneinträge -->
+      </ul>
+      <button id="back-to-home-from-list">Zurück</button>
+    </section>
+
+    <!-- Listen-Detail View -->
+    <section id="list-detail-view" class="hidden">
+      <h2>List Details</h2>
+      <div id="list-detail-container">
+        <!-- Hier wird dynamisch die Detailtabelle erstellt -->
+      </div>
+      <button id="back-to-lists-btn">Zurück zu Listen</button>
+    </section>
+
+    <!-- Quick Calc Choice View -->
+    <section id="quick-calc-choice-view" class="hidden">
+      <h2 class="centered-header">Schnelle Kalkulation wählen</h2>
+      <p>Wählen Sie die Art der schnellen Berechnung:</p>
+      <div class="choice-buttons">
+        <button id="cash-price-btn" class="calc-option">
+          Teile Cash / Preis je
+        </button>
+        <button id="gram-price-btn" class="calc-option">g × €</button>
+        <!-- Neuer Button für "Liste bearbeiten" -->
+        <button id="list-update-btn" class="calc-option">
+          Liste bearbeiten
+        </button>
+      </div>
+      <button type="button" id="close-choice-view">Zurück</button>
+    </section>
+
+    <!-- Quick Calc Main View -->
+    <section id="quick-calc-view" class="hidden">
+      <h2>Schnelle Kalkulation</h2>
+      <!-- Berechnungsmethode-Auswahl -->
+      <div class="calc-method">
+        <label for="calc-mode-select">Berechnungsmethode:</label>
+        <select id="calc-mode-select">
+          <option value="divide">Teile Cash / Preis je</option>
+          <option value="multiply">g × €</option>
+        </select>
+      </div>
+
+      <!-- Zusätzliche Felder für "Liste bearbeiten" (standardmäßig versteckt) -->
+      <div id="list-update-inputs" class="calc-inputs hidden">
+        <label for="list-name-select">Liste auswählen:</label>
+        <select id="list-name-select">
+          <option value="">-- Bitte Liste wählen --</option>
+        </select>
+
+        <label for="product-name-select">Produkt:</label>
+        <!-- Als Dropdown statt Input -->
+        <select id="product-name-select">
+          <option value="">-- Bitte Produkt wählen --</option>
+        </select>
+
+        <label for="quantity-input">Menge (Stück):</label>
+        <input
+          type="number"
+          step="any"
+          id="quantity-input"
+          placeholder="Menge"
+        />
+
+        <label for="sales-price-display">VK-Preis (€):</label>
+        <input
+          type="number"
+          step="any"
+          id="sales-price-display"
+          placeholder="VK-Preis"
+        />
+
+        <label for="break-even-display">Break Even:</label>
+        <input
+          type="text"
+          id="break-even-display"
+          placeholder="0/30"
+          readonly
+        />
+      </div>
+
+      <!-- Wrapper für Standard-Felder der SK (Cash, Preis je, Ergebnis) -->
+      <div id="sk-standard-fields" class="calc-inputs">
+        <label for="inputCash">Cash (€):</label>
+        <input type="number" step="0.01" id="inputCash" placeholder="Cash" />
+
+        <div class="realtime-toggle">
+          <input type="checkbox" id="realtime-calc" />
+          <label for="realtime-calc">Echtzeitberechnung</label>
+        </div>
+
+        <label for="inputPreisJe">Preis je (€):</label>
+        <input
+          type="number"
+          step="0.01"
+          id="inputPreisJe"
+          placeholder="Preis je"
+        />
+
+        <label for="inputErgebnis">Ergebnis:</label>
+        <input type="text" id="inputErgebnis" placeholder="Ergebnis" readonly />
+      </div>
+
+      <!-- Berechnungsbutton -->
+      <div class="preset-values">
+        <button id="btnCalculate">Berechnen</button>
+      </div>
+
+      <!-- Keypad -->
+      <div class="keypad-area">
+        <!-- Vordefinierte Werte -->
+        <div class="preset-values">
+          <button class="preset-btn" data-value="12.50">12,50</button>
+          <button class="preset-btn" data-value="10">10</button>
+          <button class="preset-btn" data-value="25">25</button>
+          <button class="preset-btn" data-value="50">50</button>
+          <button class="preset-btn" data-value="75">75</button>
+          <button class="preset-btn" data-value="125">125</button>
+        </div>
+        <!-- Tastenfeld -->
+        <div id="keypad-area-buttons">
+          <button class="clear">C</button>
+          <button class="special">←</button>
+          <button>7</button>
+          <button>8</button>
+          <button>9</button>
+          <button>4</button>
+          <button>5</button>
+          <button>6</button>
+          <button>1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>0</button>
+          <button>.</button>
+          <button id="equal">=</button>
+          <button id="close-quick-calc">Zurück</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Advanced Calc View -->
+    <section id="advanced-calc-view" class="hidden">
+      <div class="preset-values_second">
+        <div class="keypad-area">
+          <h2>Erweiterte Kalkulation</h2>
+          <div class="preset-values_second">
+            <p>Wähle eine Funktion:</p>
+            <div class="advanced-options">
+              <button id="matrix-calc-btn">Matrix-Kalkulation</button>
+              <button id="stat-calc-btn">Statistische Berechnung</button>
+              <button id="financial-calc-btn">Finanzberechnung</button>
+            </div>
+            <button id="close-advanced-calc" class="calc-back-btn">
+              Zurück
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Matrix Calc View -->
+    <section id="matrix-calc-view" class="hidden">
+      <h2 class="centered-header">Matrix-Kalkulation</h2>
+      <!-- Fragebogen -->
+      <div class="questionnaire">
+        <h3>Fragebogen</h3>
+        <form id="matrix-form">
+          <label for="product">Produkt:</label>
+          <input type="text" id="product" placeholder="Produktname" required />
+          <label for="purchase-price">Einkaufspreis (€):</label>
+          <input
+            type="number"
+            id="purchase-price"
+            placeholder="z. B. 300"
+            step="0.01"
+            required
+          />
+          <label for="quantity">Menge (g):</label>
+          <input
+            type="number"
+            id="quantity"
+            placeholder="z. B. 20"
+            step="0.01"
+            required
+          />
+          <label for="target-price">Zielverkaufspreis (€):</label>
+          <input
+            type="number"
+            id="target-price"
+            placeholder="z. B. 20"
+            step="0.01"
+            required
+          />
+          <div class="form-buttons">
+            <button type="submit" id="start-calculation">
+              Berechnung starten
+            </button>
+            <!-- Zeigt das List-Modal -->
+            <button type="button" id="add-to-list-btn">
+              In Liste aufnehmen
+            </button>
+          </div>
+        </form>
+      </div>
+      <!-- Tabellen -->
+      <div class="tables">
+        <div id="break-even-table-container">
+          <h3>Break-Even und Gewinn</h3>
+          <table id="break-even-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Warenmenge</th>
+                <th>EK (€)</th>
+                <th>VK (€)</th>
+                <th>Break-Even</th>
+                <th>Übrige Menge</th>
+                <th>Reingewinn (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamische Inhalte -->
+            </tbody>
+          </table>
+        </div>
+        <div id="correction-table-container">
+          <h3>Korrekturen</h3>
+          <table id="correction-table">
+            <thead>
+              <tr>
+                <th>✓</th>
+                <th>Warenmenge</th>
+                <th>VK (€)</th>
+                <th>Gewinn (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamische Inhalte -->
+            </tbody>
+          </table>
+        </div>
+        <button type="button" id="back-to-advanced-calc">Zurück</button>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         HISTORIE (Verlauf)
+         ================================================== -->
+    <div id="history-panel" class="hidden">
+      <h3>Historie</h3>
+      <ul id="history-list">
+        <!-- Dynamisch generierte Historieneinträge -->
+      </ul>
+    </div>
+
+    <!-- ==================================================
+         SCRIPTS
+         ================================================== -->
+    <script type="module" src="./app.js" defer></script>
+  </body>
+</html>
