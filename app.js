@@ -4,6 +4,7 @@
 import { HistoryManager } from "./HistoryManager.js";
 import { MatrixCalculator } from "./matrixCalc.js";
 import { ListManager } from "./ListManager.js";
+import { deriveKey, encryptVault, decryptVault } from "./cryptoVault.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const historyManager = new HistoryManager();
@@ -1446,6 +1447,72 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentAuthMode = "login"; // "login" | "register"
   let firebaseAuthInstance = null;
   let firebaseFns = null;
+  let firestoreDb = null;
+  let firestoreFns = null;
+  let activeCryptoKey = null; // AES-256 Schlüssel (nur im RAM/Session, verlässt nie das Gerät)
+  let isApplyingRemoteSync = false;
+
+  // Wenn sich lokal etwas in den Listen ändert, verschlüsselt in Firestore speichern
+  listManager.onSyncCallback = () => {
+    if (!isApplyingRemoteSync) {
+      pushEncryptedVaultToCloud();
+    }
+  };
+
+  async function pushEncryptedVaultToCloud() {
+    const user = firebaseAuthInstance?.currentUser;
+    if (!user || !firestoreDb || !firestoreFns || !activeCryptoKey) return;
+    try {
+      const payload = await encryptVault(
+        {
+          matrixLists: listManager.getLists(),
+          calcHistory: historyManager.getHistory(),
+          updatedAt: Date.now(),
+        },
+        activeCryptoKey
+      );
+      const docRef = firestoreFns.doc(firestoreDb, "vaults", user.uid);
+      await firestoreFns.setDoc(docRef, {
+        cipher: payload,
+        updatedAt: Date.now(),
+      });
+    } catch (err) {
+      console.warn("Cloud-Sync Push Hinweis:", err);
+    }
+  }
+
+  async function pullAndDecryptVaultFromCloud(user, key) {
+    if (!user || !firestoreDb || !firestoreFns || !key) return;
+    try {
+      const docRef = firestoreFns.doc(firestoreDb, "vaults", user.uid);
+      const snap = await firestoreFns.getDoc(docRef);
+      if (snap.exists() && snap.data()?.cipher) {
+        const decrypted = await decryptVault(snap.data().cipher, key);
+        if (decrypted && Array.isArray(decrypted.matrixLists)) {
+          // Wenn Cloud-Daten vorhanden sind und lokal leer ist (oder Cloud neuer ist), übernehmen
+          if (listManager.getLists().length === 0 || decrypted.matrixLists.length > 0) {
+            isApplyingRemoteSync = true;
+            localStorage.setItem("matrixLists", JSON.stringify(decrypted.matrixLists));
+            listManager.lists = decrypted.matrixLists;
+            listManager._migrateLegacyData();
+            if (Array.isArray(decrypted.calcHistory)) {
+              localStorage.setItem("calcHistory", JSON.stringify(decrypted.calcHistory));
+              historyManager.loadFromLocalStorage();
+            }
+            isApplyingRemoteSync = false;
+            renderDashboard();
+            renderHistory();
+            showToast("🔐 Verschlüsselte Daten aus der Cloud geladen!");
+          }
+        }
+      } else if (listManager.getLists().length > 0) {
+        // Noch kein Cloud-Stand vorhanden -> aktuellen lokalen Stand initial verschlüsselt hochladen
+        await pushEncryptedVaultToCloud();
+      }
+    } catch (err) {
+      console.warn("Cloud-Sync Pull Hinweis:", err);
+    }
+  }
 
   function showAuthNotice(msg) {
     if (!authErrorMsg) return;
@@ -1460,9 +1527,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function initFirebaseAuth() {
     try {
-      const [{ initializeApp }, authMod] = await Promise.all([
+      const [{ initializeApp }, authMod, fsMod] = await Promise.all([
         import("https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"),
         import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"),
       ]);
       const firebaseConfig = {
         apiKey: "AIzaSyBEVzoU8XExcYFEYCj-9WZXmdhAb0Rh7Pc",
@@ -1475,21 +1543,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const app = initializeApp(firebaseConfig);
       firebaseAuthInstance = authMod.getAuth(app);
       firebaseFns = authMod;
+      firestoreDb = fsMod.getFirestore(app);
+      firestoreFns = fsMod;
 
-      authMod.onAuthStateChanged(firebaseAuthInstance, (user) => {
+      authMod.onAuthStateChanged(firebaseAuthInstance, async (user) => {
         if (user) {
           authStatusDot.classList.remove("hidden");
           authUserEmail.textContent = user.email;
           authLoggedInView.classList.remove("hidden");
           authFormsView.classList.add("hidden");
+
+          // Falls das Passwort in dieser Browser-Sitzung bekannt ist, AES-Key ableiten & synchronisieren
+          const sessionPass = sessionStorage.getItem("streetc_vault_pw");
+          if (sessionPass && !activeCryptoKey) {
+            activeCryptoKey = await deriveKey(sessionPass, user.uid);
+          }
+          if (activeCryptoKey) {
+            await pullAndDecryptVaultFromCloud(user, activeCryptoKey);
+          }
         } else {
+          activeCryptoKey = null;
+          sessionStorage.removeItem("streetc_vault_pw");
           authStatusDot.classList.add("hidden");
           authLoggedInView.classList.add("hidden");
           authFormsView.classList.remove("hidden");
         }
       });
     } catch (err) {
-      console.warn("Firebase Auth Hinweis:", err);
+      console.warn("Firebase Auth/Firestore Hinweis:", err);
     }
   }
 
@@ -1526,12 +1607,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       showAuthNotice("");
+      sessionStorage.setItem("streetc_vault_pw", pass);
+      let cred;
       if (currentAuthMode === "login") {
-        await firebaseFns.signInWithEmailAndPassword(firebaseAuthInstance, email, pass);
+        cred = await firebaseFns.signInWithEmailAndPassword(firebaseAuthInstance, email, pass);
         showToast("Erfolgreich bei StreetC eingeloggt!");
       } else {
-        await firebaseFns.createUserWithEmailAndPassword(firebaseAuthInstance, email, pass);
+        cred = await firebaseFns.createUserWithEmailAndPassword(firebaseAuthInstance, email, pass);
         showToast("Account erfolgreich registriert!");
+      }
+      if (cred?.user) {
+        activeCryptoKey = await deriveKey(pass, cred.user.uid);
+        await pullAndDecryptVaultFromCloud(cred.user, activeCryptoKey);
       }
       authPasswordInput.value = "";
       authModal.classList.add("hidden");

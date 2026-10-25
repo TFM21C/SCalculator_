@@ -863,7 +863,7 @@
           <div class="auth-profile-box">
             <span class="text-muted small">Angemeldet als:</span>
             <strong id="auth-user-email" style="font-size: 1rem">-</strong>
-            <span class="privacy-pill">🔒 Alle Listen & Zahlen liegen 100% lokal im Gerätespeicher (localStorage)</span>
+            <span id="cloud-sync-status" class="privacy-pill">🔐 E2EE Cloud-Sync aktiv (AES-256 verschlüsselt)</span>
           </div>
 
           <!-- Lokales Backup (Export / Import) -->
@@ -924,7 +924,7 @@
           </form>
 
           <p class="privacy-note">
-            🔒 <strong>Datenschutz-Garantie:</strong> Der Login schützt nur den App-Zugang. Deine Berechnungen, Listen und Kommissionsdaten werden <strong>niemals</strong> hochgeladen, sondern ausschließlich lokal im Browser deines Endgeräts gespeichert.
+            🔐 <strong>Zero-Knowledge E2EE Cloud-Sync:</strong> Wenn du eingeloggt bist, werden deine Listen und Kommissionsdaten mit <strong>AES-256 (Web Crypto API)</strong> im Browser verschlüsselt und automatisch zwischen deinen Geräten (iPhone & PC) synchronisiert. In der Cloud liegt nur unlesbarer Geheimcode.
           </p>
         </div>
       </div>

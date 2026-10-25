@@ -1,5 +1,6 @@
 export class ListManager {
-  constructor() {
+  constructor(onSyncCallback = null) {
+    this.onSyncCallback = onSyncCallback;
     this.lists = JSON.parse(localStorage.getItem("matrixLists")) || [];
     this._migrateLegacyData();
   }
@@ -326,5 +327,8 @@ export class ListManager {
 
   _save() {
     localStorage.setItem("matrixLists", JSON.stringify(this.lists));
+    if (typeof this.onSyncCallback === "function") {
+      this.onSyncCallback(this.lists);
+    }
   }
 }
