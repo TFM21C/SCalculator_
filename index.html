@@ -1,377 +1,901 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>Taschenrechner Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SCalculator Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
-    <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
-    
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      const firebaseConfig = {
-        apiKey: "AIzaSyBEVzoU8XExcYFEYCj-9WZXmdhAb0Rh7Pc",
-        authDomain: "taschenrechnerpro.firebaseapp.com",
-        projectId: "taschenrechnerpro",
-        storageBucket: "taschenrechnerpro.firebasestorage.app",
-        messagingSenderId: "605428309138",
-        appId: "1:605428309138:web:ffa9e542cc6f8ad327da4b",
-        measurementId: "G-R86DVLQRMG"
-      };
-    
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-    </script>
   </head>
   <body>
-    <!-- ==================================================
-         HEADER
-         ================================================== -->
-    <header>
-      <button id="burger-menu-btn">☰</button>
-      <button id="toggle-history-btn">Verlauf anzeigen</button>
-      <button id="login-btn">Login</button>
-    </header>
+    <div class="app-shell">
+      <!-- ==================================================
+           TOP BAR (GLASSMORPHISM HEADER + INTERNE BELL-NOTIFICATIONS)
+           ================================================== -->
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+              <polyline points="16 7 22 7 22 13" />
+            </svg>
+          </div>
+          <div>
+            <span class="brand-title">SCalculator</span>
+            <span class="brand-badge">PRO</span>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Interne Erinnerungs-Glocke (Kommission / Fälligkeiten) -->
+          <button id="toggle-notifications-btn" class="icon-btn" title="Zahlungserinnerungen & Fälligkeiten" aria-label="Erinnerungen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span id="notif-badge" class="badge badge-danger hidden">0</span>
+          </button>
+
+          <!-- Rechenverlauf -->
+          <button id="toggle-history-btn" class="icon-btn" title="Rechenverlauf" aria-label="Rechenverlauf öffnen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M12 7v5l4 2" />
+            </svg>
+            <span id="history-badge" class="badge hidden">0</span>
+          </button>
+
+          <!-- Hell/Dunkel Wechsel -->
+          <button id="theme-toggle-btn" class="icon-btn" title="Design wechseln (Hell/Dunkel)" aria-label="Design wechseln">
+            <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg id="theme-icon-moon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+            </svg>
+          </button>
+
+          <!-- Account / Login Button (Firebase Auth) -->
+          <button id="auth-user-btn" class="icon-btn" title="Account & Anmeldung" aria-label="Account">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span id="auth-status-dot" class="status-dot-online hidden"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ==================================================
+           MAIN WORKSPACE (5 TABS: PORTFOLIO | RECHNER | LISTEN | KOMMISSION | MATRIX)
+           ================================================== -->
+      <main class="workspace">
+        <!-- ==================================================
+             TAB 1: PORTFOLIO DASHBOARD (TRADE REPUBLIC / BITPANDA STYLE)
+             ================================================== -->
+        <section id="tab-dashboard" class="tab-panel active">
+          <!-- Fällige Kommissions-Warnung oben auf dem Startbildschirm (falls vorhanden) -->
+          <div id="dashboard-alert-banner" class="alert-banner hidden">
+            <div class="alert-banner-left">
+              <span class="alert-dot"></span>
+              <span id="dashboard-alert-text">Offene Zahlungserinnerung fällig!</span>
+            </div>
+            <button type="button" id="dashboard-alert-action" class="btn btn-sm btn-ghost">Ansehen →</button>
+          </div>
+
+          <!-- TradeRepublic Hero Card -->
+          <div class="card portfolio-hero">
+            <div class="portfolio-hero-top">
+              <span class="portfolio-eyebrow">Gesamtbilanz (Realisierter Cashflow)</span>
+              <span id="portfolio-roi-pill" class="roi-pill">0.0 %</span>
+            </div>
+
+            <div id="portfolio-total-balance" class="portfolio-big-number">0,00 €</div>
+            <div id="portfolio-sub-balance" class="portfolio-sub-line">
+              Inkl. offener Kommission: <strong>0,00 €</strong>
+            </div>
+
+            <!-- Visueller Cashflow-Balken (Investiert vs. Eingenommen) -->
+            <div class="portfolio-bar-wrap">
+              <div class="portfolio-bar-track">
+                <div id="portfolio-bar-fill" class="portfolio-bar-fill" style="width: 0%"></div>
+              </div>
+              <div class="portfolio-bar-labels">
+                <span id="portfolio-bar-left">0% Break-Even Fortschritt</span>
+                <span id="portfolio-bar-right">Lagerwert (VK): 0,00 €</span>
+              </div>
+            </div>
+
+            <!-- 3 Mini-Metriken wie bei Bitpanda/TradeRepublic -->
+            <div class="portfolio-metrics-row">
+              <div class="p-metric">
+                <span class="p-metric-label">Investiert (EK)</span>
+                <strong id="p-metric-invested">0,00 €</strong>
+              </div>
+              <div class="p-metric">
+                <span class="p-metric-label">Einnahmen (Bar)</span>
+                <strong id="p-metric-cash" class="text-emerald">0,00 €</strong>
+              </div>
+              <div class="p-metric" id="p-metric-comm-box" style="cursor: pointer" title="Zu den offenen Posten">
+                <span class="p-metric-label">Ausstehend (Komm.)</span>
+                <strong id="p-metric-comm" class="text-amber">0,00 €</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schnell-Aktionen auf dem Startscreen -->
+          <div class="quick-actions-bar">
+            <button type="button" class="qa-btn" id="qa-book-sale">
+              <span class="qa-icon">⚡</span>
+              <span>Verkauf buchen</span>
+            </button>
+            <button type="button" class="qa-btn" id="qa-new-list">
+              <span class="qa-icon">📦</span>
+              <span>Neue Liste</span>
+            </button>
+            <button type="button" class="qa-btn" id="qa-check-offer">
+              <span class="qa-icon">🏷️</span>
+              <span>Angebot prüfen</span>
+            </button>
+          </div>
+
+          <!-- Deals & Käufe Performance-Liste -->
+          <div class="card">
+            <div class="card-header-row">
+              <div>
+                <h3>Performance deiner Käufe & Listen</h3>
+                <p class="text-muted small">Sieh auf einen Blick, mit welchem Deal du im Plus oder noch im Minus bist.</p>
+              </div>
+              <div class="filter-pills" id="dashboard-deal-filters">
+                <button type="button" class="pill-btn active" data-filter="all">Alle</button>
+                <button type="button" class="pill-btn" data-filter="plus">Im Plus</button>
+                <button type="button" class="pill-btn" data-filter="minus">Im Minus</button>
+              </div>
+            </div>
+
+            <div id="dashboard-empty-deals" class="empty-state">
+              <p>Noch keine aktiven Käufe oder Listen angelegt.</p>
+              <span>Starte mit „Neue Liste“, um deine Einkäufe und Verkäufe live zu tracken.</span>
+            </div>
+
+            <div id="dashboard-deals-list" class="deals-list"></div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             TAB 2: SCHNELLRECHNER (ANGEBOT | QUICK | LISTE) – OHNE NUMPAD
+             ================================================== -->
+        <section id="tab-quick" class="tab-panel hidden">
+          <!-- Segmented Control: Angebot | Quick | Liste -->
+          <div class="segmented-control" role="tablist" aria-label="Rechner-Modus">
+            <button type="button" class="segment-btn active" data-mode="angebot">
+              <span>🏷️ Angebot</span>
+            </button>
+            <button type="button" class="segment-btn" data-mode="quick">
+              <span>⚡ Quick (Menge × €)</span>
+            </button>
+            <button type="button" class="segment-btn" data-mode="liste">
+              <span>📋 Liste (Verkauf)</span>
+            </button>
+          </div>
+
+          <!-- Karte 1 & 2: Angebot & Quick -->
+          <div id="sk-standard-fields" class="card calc-card">
+            <div class="card-header-row">
+              <span id="calc-mode-subtitle" class="card-subtitle">
+                Angebot prüfen: Z. B. 25 Stk. für 200 € → Was kostet 1 Stück?
+              </span>
+              <label class="live-pill" title="Ergebnis sofort beim Tippen berechnen">
+                <input type="checkbox" id="realtime-calc" checked />
+                <span class="live-dot"></span>
+                <span>Live</span>
+              </label>
+            </div>
+
+            <div class="input-grid">
+              <div class="field-box active-field" id="box-inputFirst">
+                <label for="inputFirst" id="label-inputFirst">Angebotene Menge (Stk / g)</label>
+                <div class="input-with-unit">
+                  <input type="number" step="any" inputmode="decimal" id="inputFirst" placeholder="z. B. 25" autocomplete="off" />
+                  <span class="unit-tag" id="unit-inputFirst">Stk / g</span>
+                </div>
+              </div>
+
+              <div class="field-box" id="box-inputSecond">
+                <label for="inputSecond" id="label-inputSecond">Gesamtpreis des Angebots (€)</label>
+                <div class="input-with-unit">
+                  <input type="number" step="any" inputmode="decimal" id="inputSecond" placeholder="z. B. 200" autocomplete="off" />
+                  <span class="unit-tag" id="unit-inputSecond">€ Gesamt</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Schnellwahl-Vorschläge (5, 10, 12.50, 25, 50, 75, 100, 125) -->
+            <div class="preset-section">
+              <span class="preset-label">Schnellwahl für aktives Feld:</span>
+              <div class="preset-chips">
+                <button type="button" class="chip-btn preset-btn" data-value="5">5</button>
+                <button type="button" class="chip-btn preset-btn" data-value="10">10</button>
+                <button type="button" class="chip-btn preset-btn" data-value="12.5">12,50</button>
+                <button type="button" class="chip-btn preset-btn" data-value="20">20</button>
+                <button type="button" class="chip-btn preset-btn" data-value="25">25</button>
+                <button type="button" class="chip-btn preset-btn" data-value="50">50</button>
+                <button type="button" class="chip-btn preset-btn" data-value="100">100</button>
+                <button type="button" class="chip-btn preset-btn" data-value="200">200</button>
+              </div>
+            </div>
+
+            <!-- Großes Ergebnis-Banner -->
+            <div class="result-banner">
+              <div class="result-meta">
+                <span id="label-inputErgebnis">Stückpreis / Kurs (1 Einheit)</span>
+                <span id="result-formula-preview" class="formula-preview">Gesamtpreis ÷ Menge</span>
+              </div>
+              <div class="result-value-wrap">
+                <output id="inputErgebnis" class="result-output">0,00 €</output>
+              </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 0.9rem">
+              <button type="button" id="btnSaveQuickCalc" class="btn btn-primary full-width">
+                Im Verlauf merken
+              </button>
+            </div>
+          </div>
+
+          <!-- Karte 3: Reiter "Liste" (Teilverkauf buchen – Bar oder auf Kommission) -->
+          <div id="list-update-inputs" class="card calc-card hidden">
+            <div class="card-header-row">
+              <span class="card-subtitle">Verkauf aus einer bestehenden Liste buchen</span>
+            </div>
+
+            <div class="form-row-2">
+              <div class="field-group">
+                <label for="list-name-select">Liste wählen</label>
+                <select id="list-name-select" class="modern-select">
+                  <option value="">-- Liste wählen --</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="product-name-select">Produkt</label>
+                <select id="product-name-select" class="modern-select">
+                  <option value="">-- Produkt wählen --</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="sale-product-status" class="status-strip hidden">
+              <div class="status-metric">
+                <span class="metric-label">Restbestand</span>
+                <strong id="sale-remaining-stock">-</strong>
+              </div>
+              <div class="status-metric">
+                <span class="metric-label">Break-Even</span>
+                <strong id="break-even-display">0 / 0</strong>
+              </div>
+              <div class="status-metric">
+                <span class="metric-label">Ziel-VK</span>
+                <strong id="sale-target-vk">-</strong>
+              </div>
+            </div>
+
+            <div class="input-grid">
+              <div class="field-box" id="box-quantity-input">
+                <label for="quantity-input">Verkaufte Menge (Stk / g)</label>
+                <div class="input-with-unit">
+                  <input type="number" step="any" inputmode="decimal" id="quantity-input" placeholder="0" autocomplete="off" />
+                  <span class="unit-tag">Einh.</span>
+                </div>
+              </div>
+
+              <div class="field-box" id="box-sales-price-display">
+                <label for="sales-price-display">Verkaufspreis je Einheit (€)</label>
+                <div class="input-with-unit">
+                  <input type="number" step="any" inputmode="decimal" id="sales-price-display" placeholder="0.00" autocomplete="off" />
+                  <span class="unit-tag">€</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Schnellwahl-Chips auch für Verkauf -->
+            <div class="preset-section">
+              <span class="preset-label">Schnellwahl:</span>
+              <div class="preset-chips">
+                <button type="button" class="chip-btn preset-btn" data-value="1">1</button>
+                <button type="button" class="chip-btn preset-btn" data-value="2">2</button>
+                <button type="button" class="chip-btn preset-btn" data-value="5">5</button>
+                <button type="button" class="chip-btn preset-btn" data-value="10">10</button>
+                <button type="button" class="chip-btn preset-btn" data-value="12.5">12,50</button>
+                <button type="button" class="chip-btn preset-btn" data-value="20">20</button>
+                <button type="button" class="chip-btn preset-btn" data-value="25">25</button>
+                <button type="button" class="chip-btn preset-btn" data-value="50">50</button>
+              </div>
+            </div>
+
+            <!-- Unaufdringlicher Toggle: "Auf Kommission verkauft" + "Teilzahlung" -->
+            <div class="commission-toggle-box">
+              <label class="commission-switch-row">
+                <div class="commission-switch-label">
+                  <strong>🤝 Auf Kommission verkauft?</strong>
+                  <span>Kunde bezahlt erst später (oder zahlt nur einen Teil an)</span>
+                </div>
+                <input type="checkbox" id="sale-is-commission" class="modern-checkbox" />
+              </label>
+
+              <div id="commission-extra-fields" class="commission-extra hidden">
+                <div class="form-row-2">
+                  <div class="field-group span-full">
+                    <label for="sale-person-code">Kürzel / Name der Person *</label>
+                    <input type="text" id="sale-person-code" class="modern-input" placeholder="z. B. MK, Lukas, Kollege A" list="known-persons-datalist" />
+                    <datalist id="known-persons-datalist"></datalist>
+                  </div>
+                </div>
+
+                <!-- Neue Checkbox: Teilzahlung / Anzahlung -->
+                <div class="partial-payment-box">
+                  <label class="commission-switch-row">
+                    <div class="commission-switch-label">
+                      <strong>💶 Teilzahlung / Anzahlung erhalten?</strong>
+                      <span>Hat die Person schon einen Euro-Betrag oder ganze Stücke bezahlt?</span>
+                    </div>
+                    <input type="checkbox" id="sale-has-partial" class="modern-checkbox" />
+                  </label>
+
+                  <div id="partial-payment-fields" class="commission-extra hidden">
+                    <div class="segmented-control modal-segments" style="margin-bottom: 0.65rem">
+                      <button type="button" class="segment-btn active" id="partial-mode-eur-btn" data-pmode="eur">
+                        Betrag in € bezahlt
+                      </button>
+                      <button type="button" class="segment-btn" id="partial-mode-units-btn" data-pmode="units">
+                        Ganze Stk. / Einh. bezahlt
+                      </button>
+                    </div>
+
+                    <div class="field-group">
+                      <label for="sale-partial-input" id="label-sale-partial-input">Bereits bezahlter Betrag (€)</label>
+                      <input
+                        type="number"
+                        step="any"
+                        inputmode="decimal"
+                        id="sale-partial-input"
+                        class="modern-input"
+                        placeholder="z. B. 50"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row-2" style="margin-top: 0.75rem">
+                  <div class="field-group">
+                    <label for="sale-due-date">Zugesagter Zahltag (optional)</label>
+                    <input type="date" id="sale-due-date" class="modern-input" />
+                  </div>
+                  <div class="field-group">
+                    <label for="sale-reminder-date">Erinnerung / Wieder ansprechen (optional)</label>
+                    <input type="date" id="sale-reminder-date" class="modern-input" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-banner sale-banner">
+              <div class="result-meta">
+                <span id="sale-banner-title">Betrag dieser Buchung</span>
+                <span id="sale-preview-sub" class="formula-preview">Menge × VK-Preis</span>
+              </div>
+              <div class="result-value-wrap">
+                <output id="sale-preview-output" class="result-output">0,00 €</output>
+              </div>
+            </div>
+
+            <button type="button" id="btnBookSale" class="btn btn-primary full-width">
+              Verkauf jetzt buchen
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             TAB 3: MEINE LISTEN (ÜBERSICHT, LISTEN-BUILDER & DETAIL-STATISTIK)
+             ================================================== -->
+        <section id="tab-lists" class="tab-panel hidden">
+          <!-- ANSICHT A: Listen-Übersicht -->
+          <div id="list-overview-panel">
+            <div class="card">
+              <div class="card-header-row">
+                <div>
+                  <h2>Meine Listen & Bestände</h2>
+                  <p class="text-muted">Jede Liste bündelt deine eingekauften Produkte, Verkäufe und Gewinne.</p>
+                </div>
+                <button type="button" id="open-list-builder-btn" class="btn btn-primary btn-sm">
+                  + Neue Liste
+                </button>
+              </div>
+
+              <div id="lists-empty-state" class="empty-state">
+                <p>Noch keine Listen vorhanden.</p>
+                <span>Klicke auf „+ Neue Liste“, um Produkte mit EK, Menge und Ziel-VK anzulegen.</span>
+              </div>
+
+              <ul id="lists-overview" class="lists-grid"></ul>
+            </div>
+          </div>
+
+          <!-- ANSICHT B: Neuer Listen-Editor (bleibt direkt im Tab "Listen"!) -->
+          <div id="list-builder-view" class="hidden">
+            <div class="card">
+              <div class="card-header-row">
+                <div>
+                  <h2 id="builder-title">Neue Liste erstellen</h2>
+                  <p class="text-muted small">Gib der Liste einen Namen und füge beliebig viele Produkte hinzu.</p>
+                </div>
+                <button type="button" id="cancel-list-builder-btn" class="btn btn-ghost btn-sm">
+                  Abbrechen
+                </button>
+              </div>
+
+              <div class="field-group" style="margin-bottom: 1rem">
+                <label for="builder-list-name">Name der Liste *</label>
+                <input type="text" id="builder-list-name" class="modern-input" placeholder="z. B. Einkauf Oktober / Charge #1" />
+              </div>
+
+              <!-- Produkt-Eingabe-Box (wie Matrix & Gewinn) -->
+              <div class="builder-product-box">
+                <h4>Produkt zur Liste hinzufügen</h4>
+                <div class="matrix-form-grid" style="margin-top: 0.65rem">
+                  <div class="field-group span-full">
+                    <label for="builder-product-name">Produktname</label>
+                    <input type="text" id="builder-product-name" class="modern-input" placeholder="z. B. Artikel A" />
+                  </div>
+                  <div class="field-group">
+                    <label for="builder-ek">Gesamt-EK (€)</label>
+                    <input type="number" step="any" id="builder-ek" class="modern-input" placeholder="z. B. 300" />
+                  </div>
+                  <div class="field-group">
+                    <label for="builder-qty">Menge (Stk / g)</label>
+                    <input type="number" step="any" id="builder-qty" class="modern-input" placeholder="z. B. 25" />
+                  </div>
+                  <div class="field-group span-full">
+                    <label for="builder-vk">Voraussichtlicher VK-Preis je Einheit (€)</label>
+                    <input type="number" step="any" id="builder-vk" class="modern-input" placeholder="z. B. 20" />
+                  </div>
+                </div>
+
+                <!-- Live-Vorschau für das aktuelle Produkt -->
+                <div id="builder-live-preview" class="builder-preview-strip">
+                  <span>Stück-EK: <strong id="b-prev-unit">0,00 €</strong></span>
+                  <span>Break-Even: <strong id="b-prev-be">0 Einh.</strong></span>
+                  <span>Erw. Gewinn: <strong id="b-prev-profit" class="text-emerald">+0,00 €</strong></span>
+                </div>
+
+                <button type="button" id="builder-add-product-btn" class="btn btn-secondary full-width">
+                  + Produkt zur Liste hinzufügen
+                </button>
+              </div>
+
+              <!-- Geplante Produkte in dieser neuen Liste -->
+              <div class="builder-staged-section">
+                <h4>Produkte in dieser Liste (<span id="builder-staged-count">0</span>)</h4>
+                <ul id="builder-staged-list" class="staged-list"></ul>
+              </div>
+
+              <button type="button" id="builder-save-list-btn" class="btn btn-primary full-width">
+                ✓ Liste jetzt erstellen
+              </button>
+            </div>
+          </div>
+
+          <!-- ANSICHT C: Listen-Detailansicht mit Statistik, Restbestand & Verkaufshistorie -->
+          <div id="list-detail-view" class="hidden">
+            <div class="card">
+              <div class="card-header-row">
+                <button type="button" id="back-to-lists-btn" class="btn btn-ghost btn-sm">
+                  ← Alle Listen
+                </button>
+                <div class="detail-actions">
+                  <button type="button" id="add-product-to-existing-list-btn" class="btn btn-secondary btn-sm">
+                    + Produkt
+                  </button>
+                  <button type="button" id="jump-to-sale-btn" class="btn btn-primary btn-sm">
+                    + Verkauf buchen
+                  </button>
+                  <button type="button" id="delete-list-btn" class="btn btn-danger-ghost btn-sm">
+                    Löschen
+                  </button>
+                </div>
+              </div>
+
+              <div id="list-detail-container"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             TAB 4: KOMMISSION & OFFENE POSTEN (PERSONEN-SUBMENÜ, FILTER, ERINNERUNGEN)
+             ================================================== -->
+        <section id="tab-commission" class="tab-panel hidden">
+          <!-- KPI Header für Kommission -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-amber">
+              <span class="kpi-label">Offene Gesamtsumme</span>
+              <strong id="comm-total-open" class="kpi-value text-amber">0,00 €</strong>
+              <span id="comm-open-count" class="kpi-sub">0 offene Posten</span>
+            </div>
+            <div class="kpi-card kpi-danger">
+              <span class="kpi-label">Überfällig / Erinnerung</span>
+              <strong id="comm-overdue-amount" class="kpi-value text-danger">0,00 €</strong>
+              <span id="comm-overdue-count" class="kpi-sub">0 Personen ansprechen</span>
+            </div>
+            <div class="kpi-card kpi-success">
+              <span class="kpi-label">Bereits eingeholt</span>
+              <strong id="comm-paid-amount" class="kpi-value text-emerald">0,00 €</strong>
+              <span id="comm-paid-count" class="kpi-sub">0 erledigte Zahlungen</span>
+            </div>
+          </div>
+
+          <!-- Filter & Suche + Personen-Submenü -->
+          <div class="card">
+            <div class="card-header-row">
+              <div>
+                <h2>Kommission & Personen-Übersicht</h2>
+                <p class="text-muted small">Wer schuldet noch wie viel aus welcher Liste – inkl. Zahltag & Erinnerungs-Wecker.</p>
+              </div>
+            </div>
+
+            <!-- Suchfeld & Status-Filter -->
+            <div class="comm-controls">
+              <input
+                type="text"
+                id="comm-search-input"
+                class="modern-input"
+                placeholder="🔍 Nach Person (Kürzel), Produkt oder Liste suchen..."
+              />
+              <div class="filter-pills" id="comm-status-filters">
+                <button type="button" class="pill-btn active" data-status="open">Offen</button>
+                <button type="button" class="pill-btn" data-status="overdue">⏰ Fällig / Ansprechen</button>
+                <button type="button" class="pill-btn" data-status="paid">Bezahlt (Verlauf)</button>
+                <button type="button" class="pill-btn" data-status="all">Alle</button>
+              </div>
+            </div>
+
+            <!-- Personen-Kürzel Submenü (Horizontal klickbare Personen-Karten) -->
+            <div class="person-chips-wrap">
+              <span class="preset-label">Personen-Filter (Anklicken für Personen-Akte & Gesamtsumme):</span>
+              <div id="comm-person-pills" class="person-pills-bar"></div>
+            </div>
+
+            <!-- Spezifische Personen-Akte (erscheint wenn eine Person ausgewählt ist) -->
+            <div id="comm-person-dossier" class="person-dossier hidden"></div>
+
+            <!-- Liste der Kommissions-Einträge -->
+            <div id="comm-empty-state" class="empty-state">
+              <p>Keine Einträge für diesen Filter gefunden.</p>
+              <span>Wenn du beim Verkaufen „Auf Kommission“ aktivierst, erscheinen die Posten hier.</span>
+            </div>
+
+            <div id="comm-entries-list" class="comm-list"></div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             TAB 5: MATRIX & GEWINN SIMULATOR
+             ================================================== -->
+        <section id="tab-matrix" class="tab-panel hidden">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h2>Matrix & Break-Even Simulator</h2>
+                <p class="text-muted">Simuliere vorab Einkauf, Gewinnschwelle (Break-Even) und Preis-Korrekturen.</p>
+              </div>
+            </div>
+
+            <form id="matrix-form" class="matrix-form-grid" style="margin-top: 0.85rem">
+              <div class="field-group span-full">
+                <label for="product">Produkt / Bezeichnung</label>
+                <input type="text" id="product" class="modern-input" placeholder="z. B. Posten A" required />
+              </div>
+
+              <div class="field-group">
+                <label for="purchase-price">Gesamt-Einkaufspreis (€)</label>
+                <input type="number" id="purchase-price" class="modern-input" placeholder="z. B. 300" step="0.01" min="0.01" required />
+              </div>
+
+              <div class="field-group">
+                <label for="quantity">Gesamtmenge (Stk / g)</label>
+                <input type="number" id="quantity" class="modern-input" placeholder="z. B. 20" step="0.01" min="0.01" required />
+              </div>
+
+              <div class="field-group span-full">
+                <label for="target-price">Ziel-Verkaufspreis pro Einheit (€)</label>
+                <input type="number" id="target-price" class="modern-input" placeholder="z. B. 25" step="0.01" min="0.01" required />
+              </div>
+
+              <div class="form-actions span-full">
+                <button type="submit" id="start-calculation" class="btn btn-primary">
+                  <span>Kalkulation berechnen</span>
+                </button>
+                <button type="button" id="add-to-list-btn" class="btn btn-secondary" disabled>
+                  <span>In Liste übernehmen</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div id="matrix-kpi-grid" class="kpi-grid hidden">
+            <div class="kpi-card">
+              <span class="kpi-label">EK pro Einheit</span>
+              <strong id="kpi-unit-cost" class="kpi-value">0,00 €</strong>
+              <span id="kpi-margin-pct" class="kpi-sub">Marge: 0%</span>
+            </div>
+            <div class="kpi-card kpi-highlight">
+              <span class="kpi-label">Break-Even ab</span>
+              <strong id="kpi-breakeven" class="kpi-value">0 Einh.</strong>
+              <span id="kpi-remaining" class="kpi-sub">0 Einh. im Plus</span>
+            </div>
+            <div class="kpi-card kpi-success">
+              <span class="kpi-label">Max. Reingewinn</span>
+              <strong id="kpi-profit" class="kpi-value">+0,00 €</strong>
+              <span id="kpi-revenue" class="kpi-sub">Umsatz: 0,00 €</span>
+            </div>
+          </div>
+
+          <div id="matrix-tables-wrap" class="matrix-tables hidden">
+            <div class="card table-card">
+              <div class="card-header-row">
+                <h3>Break-Even & Gewinnübersicht</h3>
+              </div>
+              <div class="table-scroll">
+                <table id="break-even-table" class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Produkt</th>
+                      <th>Menge</th>
+                      <th>EK Gesamt</th>
+                      <th>Umsatz (VK)</th>
+                      <th>Break-Even</th>
+                      <th>Freie Menge</th>
+                      <th>Reingewinn</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card table-card">
+              <div class="card-header-row">
+                <div>
+                  <h3>Szenario-Simulator (Korrekturen)</h3>
+                  <p class="text-muted small">Klicke direkt in Menge oder VK-Preis, um abweichende Teilmengen zu simulieren.</p>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table id="correction-table" class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Übernehmen</th>
+                      <th>Teilmenge (bearbeitbar)</th>
+                      <th>VK/Einh. (bearbeitbar)</th>
+                      <th>Szenario-Gewinn</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ==================================================
+           BOTTOM TAB NAVIGATION (REIHENFOLGE NACH VORGABE)
+           1. Portfolio | 2. Rechner | 3. Listen | 4. Kommission | 5. Matrix
+           ================================================== -->
+      <nav class="bottom-nav" aria-label="Hauptnavigation">
+        <button type="button" class="nav-tab active" data-target="tab-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          <span>Portfolio</span>
+        </button>
+
+        <button type="button" class="nav-tab" data-target="tab-quick">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span>Rechner</span>
+        </button>
+
+        <button type="button" class="nav-tab" data-target="tab-lists">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            <path d="M9 14l2 2 4-4" />
+          </svg>
+          <span>Listen</span>
+          <span id="lists-count-badge" class="nav-pill hidden">0</span>
+        </button>
+
+        <button type="button" class="nav-tab" data-target="tab-commission">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Kommission</span>
+          <span id="comm-nav-badge" class="nav-pill nav-pill-amber hidden">0</span>
+        </button>
+
+        <button type="button" class="nav-tab" data-target="tab-matrix">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Matrix</span>
+        </button>
+      </nav>
+    </div>
 
     <!-- ==================================================
-         BURGER MENÜ (NAVIGATION)
+         SLIDE-OVER DRAWER: RECHENVERLAUF (HISTORIE)
          ================================================== -->
-    <aside id="menu-panel" class="hidden">
-      <div id="menu-overlay" class="hidden"></div>
-      <div id="menu-content">
-        <button id="close-menu-btn" class="menu-close-btn">X</button>
-        <h2>Menü</h2>
-        <nav>
-          <ul class="navigation">
-            <li><button id="home-nav">Startseite</button></li>
-            <li><button id="quick-calc-nav">Schnelle Kalkulation</button></li>
-            <li>
-              <button id="advanced-calc-nav">Erweiterte Kalkulation</button>
-            </li>
-            <li><button id="matrix-calc-nav">Matrix-Kalkulation</button></li>
-            <li><button id="stat-calc-nav">Statistische Berechnung</button></li>
-            <li><button id="financial-calc-nav">Finanzberechnung</button></li>
-          </ul>
-        </nav>
+    <div id="history-backdrop" class="backdrop hidden"></div>
+    <aside id="history-panel" class="drawer hidden" aria-label="Rechenverlauf">
+      <div class="drawer-header">
+        <h3>Rechenverlauf</h3>
+        <div class="drawer-actions">
+          <button type="button" id="clear-history-btn" class="btn btn-danger-ghost btn-sm">Leeren</button>
+          <button type="button" id="close-history-btn" class="icon-btn" aria-label="Schließen">✕</button>
+        </div>
       </div>
+      <p class="drawer-hint">Tippe auf einen Eintrag, um den Wert wieder einzusetzen.</p>
+      <ul id="history-list" class="history-list"></ul>
     </aside>
 
     <!-- ==================================================
-         MAIN VIEW: STARTSEITE
+         MODAL: ERINNERUNG / DATUM FÜR KOMMISSION ANPASSEN
          ================================================== -->
-    <main id="home-view">
-      <button id="quick-calc-btn">Schnelle Kalkulation</button>
-      <button id="advanced-calc-btn">Erweiterte Kalkulation</button>
-      <button id="load-op-btn">Operation laden</button>
-    </main>
+    <div id="reminder-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="reminder-modal-title">Erinnerung & Zahltag setzen</h3>
+          <button type="button" id="reminder-modal-close" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <label for="edit-due-date">Zugesagter Zahltag (Wann wollte die Person zahlen?)</label>
+          <input type="date" id="edit-due-date" class="modern-input" />
 
-    <!-- ==================================================
-         MODALE ELEMENTE
-         ================================================== -->
-    <!-- Login Modal -->
-    <div id="login-modal" class="hidden">
-      <form id="login-form">
-        <label for="username">Nutzername:</label>
-        <input type="text" id="username" name="username" />
-        <label for="password">Passwort:</label>
-        <input type="password" id="password" name="password" />
-        <button type="submit">Einloggen</button>
-      </form>
-    </div>
+          <label for="edit-reminder-date" style="margin-top: 0.5rem">Wann möchtest du die Person wieder ansprechen?</label>
+          <input type="date" id="edit-reminder-date" class="modern-input" />
 
-    <!-- List Modal: "In Liste aufnehmen" -->
-    <div id="list-modal" class="modal hidden">
-      <div class="modal-content">
-        <h3>In welche Liste aufnehmen?</h3>
-        <p>Wähle eine Option:</p>
-        <div class="modal-options">
-          <button id="new-list-btn">Neue Liste erstellen</button>
-          <button id="choose-list-btn">Bestehende Liste auswählen</button>
+          <button type="button" id="save-reminder-btn" class="btn btn-primary full-width">
+            Erinnerung speichern
+          </button>
         </div>
-        <div id="new-list-form" class="hidden">
-          <label for="new-list-name">Listenname:</label>
-          <input type="text" id="new-list-name" placeholder="Name der Liste" />
-          <button id="create-list-confirm-btn">Liste erstellen</button>
-        </div>
-        <div id="existing-list-form" class="hidden">
-          <label for="existing-list-select">Liste wählen:</label>
-          <select id="existing-list-select"></select>
-          <button id="choose-list-confirm-btn">Liste übernehmen</button>
-        </div>
-        <button id="list-modal-close-btn">Schließen</button>
       </div>
     </div>
 
     <!-- ==================================================
-         VIEWS
+         MODAL: MATRIX-ERGEBNIS IN LISTE ÜBERNEHMEN
          ================================================== -->
-    <!-- Listen-Übersicht View -->
-    <section id="list-view" class="hidden">
-      <h2>Meine Listen</h2>
-      <ul id="lists-overview">
-        <!-- Dynamisch generierte Listeneinträge -->
-      </ul>
-      <button id="back-to-home-from-list">Zurück</button>
-    </section>
-
-    <!-- Listen-Detail View -->
-    <section id="list-detail-view" class="hidden">
-      <h2>List Details</h2>
-      <div id="list-detail-container">
-        <!-- Hier wird dynamisch die Detailtabelle erstellt -->
-      </div>
-      <button id="back-to-lists-btn">Zurück zu Listen</button>
-    </section>
-
-    <!-- Quick Calc Choice View -->
-    <section id="quick-calc-choice-view" class="hidden">
-      <h2 class="centered-header">Schnelle Kalkulation wählen</h2>
-      <p>Wählen Sie die Art der schnellen Berechnung:</p>
-      <div class="choice-buttons">
-        <button id="cash-price-btn" class="calc-option">
-          Teile Cash / Preis je
-        </button>
-        <button id="gram-price-btn" class="calc-option">g × €</button>
-        <!-- Neuer Button für "Liste bearbeiten" -->
-        <button id="list-update-btn" class="calc-option">
-          Liste bearbeiten
-        </button>
-      </div>
-      <button type="button" id="close-choice-view">Zurück</button>
-    </section>
-
-    <!-- Quick Calc Main View -->
-    <section id="quick-calc-view" class="hidden">
-      <h2>Schnelle Kalkulation</h2>
-      <!-- Berechnungsmethode-Auswahl -->
-      <div class="calc-method">
-        <label for="calc-mode-select">Berechnungsmethode:</label>
-        <select id="calc-mode-select">
-          <option value="divide">Teile Cash / Preis je</option>
-          <option value="multiply">g × €</option>
-        </select>
-      </div>
-
-      <!-- Zusätzliche Felder für "Liste bearbeiten" (standardmäßig versteckt) -->
-      <div id="list-update-inputs" class="calc-inputs hidden">
-        <label for="list-name-select">Liste auswählen:</label>
-        <select id="list-name-select">
-          <option value="">-- Bitte Liste wählen --</option>
-        </select>
-
-        <label for="product-name-select">Produkt:</label>
-        <!-- Als Dropdown statt Input -->
-        <select id="product-name-select">
-          <option value="">-- Bitte Produkt wählen --</option>
-        </select>
-
-        <label for="quantity-input">Menge (Stück):</label>
-        <input
-          type="number"
-          step="any"
-          id="quantity-input"
-          placeholder="Menge"
-        />
-
-        <label for="sales-price-display">VK-Preis (€):</label>
-        <input
-          type="number"
-          step="any"
-          id="sales-price-display"
-          placeholder="VK-Preis"
-        />
-
-        <label for="break-even-display">Break Even:</label>
-        <input
-          type="text"
-          id="break-even-display"
-          placeholder="0/30"
-          readonly
-        />
-      </div>
-
-      <!-- Wrapper für Standard-Felder der SK (Cash, Preis je, Ergebnis) -->
-      <div id="sk-standard-fields" class="calc-inputs">
-        <label for="inputCash">Cash (€):</label>
-        <input type="number" step="0.01" id="inputCash" placeholder="Cash" />
-
-        <div class="realtime-toggle">
-          <input type="checkbox" id="realtime-calc" />
-          <label for="realtime-calc">Echtzeitberechnung</label>
+    <div id="list-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>In Liste übernehmen</h3>
+          <button type="button" id="list-modal-close-btn" class="icon-btn">✕</button>
         </div>
 
-        <label for="inputPreisJe">Preis je (€):</label>
-        <input
-          type="number"
-          step="0.01"
-          id="inputPreisJe"
-          placeholder="Preis je"
-        />
-
-        <label for="inputErgebnis">Ergebnis:</label>
-        <input type="text" id="inputErgebnis" placeholder="Ergebnis" readonly />
-      </div>
-
-      <!-- Berechnungsbutton -->
-      <div class="preset-values">
-        <button id="btnCalculate">Berechnen</button>
-      </div>
-
-      <!-- Keypad -->
-      <div class="keypad-area">
-        <!-- Vordefinierte Werte -->
-        <div class="preset-values">
-          <button class="preset-btn" data-value="12.50">12,50</button>
-          <button class="preset-btn" data-value="10">10</button>
-          <button class="preset-btn" data-value="25">25</button>
-          <button class="preset-btn" data-value="50">50</button>
-          <button class="preset-btn" data-value="75">75</button>
-          <button class="preset-btn" data-value="125">125</button>
+        <div class="segmented-control modal-segments">
+          <button type="button" id="choose-list-btn" class="segment-btn active">Bestehende Liste</button>
+          <button type="button" id="new-list-btn" class="segment-btn">Neue Liste</button>
         </div>
-        <!-- Tastenfeld -->
-        <div id="keypad-area-buttons">
-          <button class="clear">C</button>
-          <button class="special">←</button>
-          <button>7</button>
-          <button>8</button>
-          <button>9</button>
-          <button>4</button>
-          <button>5</button>
-          <button>6</button>
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>0</button>
-          <button>.</button>
-          <button id="equal">=</button>
-          <button id="close-quick-calc">Zurück</button>
+
+        <div id="existing-list-form" class="modal-body">
+          <label for="existing-list-select">Ziel-Liste auswählen</label>
+          <select id="existing-list-select" class="modern-select"></select>
+          <button type="button" id="choose-list-confirm-btn" class="btn btn-primary full-width">
+            In ausgewählte Liste speichern
+          </button>
+        </div>
+
+        <div id="new-list-form" class="modal-body hidden">
+          <label for="new-list-name">Name der neuen Liste</label>
+          <input type="text" id="new-list-name" class="modern-input" placeholder="z. B. Oktober Bestand" />
+          <button type="button" id="create-list-confirm-btn" class="btn btn-primary full-width">
+            Liste erstellen & speichern
+          </button>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Advanced Calc View -->
-    <section id="advanced-calc-view" class="hidden">
-      <div class="preset-values_second">
-        <div class="keypad-area">
-          <h2>Erweiterte Kalkulation</h2>
-          <div class="preset-values_second">
-            <p>Wähle eine Funktion:</p>
-            <div class="advanced-options">
-              <button id="matrix-calc-btn">Matrix-Kalkulation</button>
-              <button id="stat-calc-btn">Statistische Berechnung</button>
-              <button id="financial-calc-btn">Finanzberechnung</button>
+    <!-- ==================================================
+         MODAL: WEITERE TEILZAHLUNG AUF OFFENE KOMMISSION BUCHEN
+         ================================================== -->
+    <div id="installment-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="installment-modal-title">Teilzahlung verbuchen</h3>
+          <button type="button" id="installment-modal-close" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <p id="installment-modal-info" class="text-muted small" style="margin-bottom: 0.5rem"></p>
+          <label for="installment-amount-input">Jetzt gezahlter Betrag (€)</label>
+          <input type="number" step="any" inputmode="decimal" id="installment-amount-input" class="modern-input" placeholder="z. B. 25" />
+          <button type="button" id="save-installment-btn" class="btn btn-primary full-width">
+            Teilzahlung abziehen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+         MODAL: ACCOUNT, LOGIN, REGISTRIERUNG & PASSWORT VERGESSEN
+         (100% LOKALE NUTZERDATEN – PRIVACY FIRST)
+         ================================================== -->
+    <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="auth-modal-title">Account & Zugang</h3>
+          <button type="button" id="auth-modal-close" class="icon-btn">✕</button>
+        </div>
+
+        <!-- Ansicht, wenn bereits eingeloggt -->
+        <div id="auth-logged-in-view" class="modal-body hidden">
+          <div class="auth-profile-box">
+            <span class="text-muted small">Angemeldet als:</span>
+            <strong id="auth-user-email" style="font-size: 1rem">-</strong>
+            <span class="privacy-pill">🔒 Alle Listen & Zahlen bleiben 100% lokal auf deinem Gerät</span>
+          </div>
+          <button type="button" id="auth-logout-btn" class="btn btn-danger-ghost full-width">
+            Ausloggen
+          </button>
+        </div>
+
+        <!-- Ansicht, wenn ausgeloggt (Login | Registrieren | Passwort vergessen) -->
+        <div id="auth-forms-view">
+          <div class="segmented-control modal-segments" id="auth-tabs">
+            <button type="button" class="segment-btn active" data-authtab="login">Einloggen</button>
+            <button type="button" class="segment-btn" data-authtab="register">Registrieren</button>
+          </div>
+
+          <form id="auth-form" class="modal-body">
+            <label for="auth-email">E-Mail-Adresse</label>
+            <input type="email" id="auth-email" class="modern-input" placeholder="name@beispiel.de" required />
+
+            <div id="auth-password-group" class="field-group" style="margin-top: 0.35rem">
+              <label for="auth-password">Passwort (mind. 6 Zeichen)</label>
+              <input type="password" id="auth-password" class="modern-input" placeholder="••••••••" />
             </div>
-            <button id="close-advanced-calc" class="calc-back-btn">
-              Zurück
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Matrix Calc View -->
-    <section id="matrix-calc-view" class="hidden">
-      <h2 class="centered-header">Matrix-Kalkulation</h2>
-      <!-- Fragebogen -->
-      <div class="questionnaire">
-        <h3>Fragebogen</h3>
-        <form id="matrix-form">
-          <label for="product">Produkt:</label>
-          <input type="text" id="product" placeholder="Produktname" required />
-          <label for="purchase-price">Einkaufspreis (€):</label>
-          <input
-            type="number"
-            id="purchase-price"
-            placeholder="z. B. 300"
-            step="0.01"
-            required
-          />
-          <label for="quantity">Menge (g):</label>
-          <input
-            type="number"
-            id="quantity"
-            placeholder="z. B. 20"
-            step="0.01"
-            required
-          />
-          <label for="target-price">Zielverkaufspreis (€):</label>
-          <input
-            type="number"
-            id="target-price"
-            placeholder="z. B. 20"
-            step="0.01"
-            required
-          />
-          <div class="form-buttons">
-            <button type="submit" id="start-calculation">
-              Berechnung starten
+            <button type="submit" id="auth-submit-btn" class="btn btn-primary full-width">
+              Jetzt einloggen
             </button>
-            <!-- Zeigt das List-Modal -->
-            <button type="button" id="add-to-list-btn">
-              In Liste aufnehmen
-            </button>
-          </div>
-        </form>
-      </div>
-      <!-- Tabellen -->
-      <div class="tables">
-        <div id="break-even-table-container">
-          <h3>Break-Even und Gewinn</h3>
-          <table id="break-even-table">
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th>Warenmenge</th>
-                <th>EK (€)</th>
-                <th>VK (€)</th>
-                <th>Break-Even</th>
-                <th>Übrige Menge</th>
-                <th>Reingewinn (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Dynamische Inhalte -->
-            </tbody>
-          </table>
-        </div>
-        <div id="correction-table-container">
-          <h3>Korrekturen</h3>
-          <table id="correction-table">
-            <thead>
-              <tr>
-                <th>✓</th>
-                <th>Warenmenge</th>
-                <th>VK (€)</th>
-                <th>Gewinn (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Dynamische Inhalte -->
-            </tbody>
-          </table>
-        </div>
-        <button type="button" id="back-to-advanced-calc">Zurück</button>
-      </div>
-    </section>
 
-    <!-- ==================================================
-         HISTORIE (Verlauf)
-         ================================================== -->
-    <div id="history-panel" class="hidden">
-      <h3>Historie</h3>
-      <ul id="history-list">
-        <!-- Dynamisch generierte Historieneinträge -->
-      </ul>
+            <div class="auth-footer-links">
+              <button type="button" id="auth-forgot-link" class="link-btn">
+                Passwort vergessen? (Reset-Link per Mail senden)
+              </button>
+            </div>
+          </form>
+
+          <p class="privacy-note">
+            🔒 <strong>Datenschutz-Garantie:</strong> Der Login schützt nur den App-Zugang. Deine Berechnungen, Listen und Kommissionsdaten werden <strong>niemals</strong> hochgeladen, sondern ausschließlich lokal im Browser deines Endgeräts gespeichert.
+          </p>
+        </div>
+      </div>
     </div>
 
-    <!-- ==================================================
-         SCRIPTS
-         ================================================== -->
-    <script type="module" src="./app.js" defer></script>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script type="module" src="./app.js"></script>
   </body>
 </html>

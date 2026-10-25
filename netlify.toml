@@ -1,0 +1,13 @@
+# Netlify Deployment-Konfiguration für SCalculator Pro
+# Statische Auslieferung (ES-Module direkt im Browser, 0 Sekunden Build-Zeit)
+
+[build]
+  publish = "."
+  command = "echo 'SCalculator Pro static deploy ready'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
