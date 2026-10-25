@@ -1386,10 +1386,77 @@ document.addEventListener("DOMContentLoaded", () => {
   const authPasswordInput = document.getElementById("auth-password");
   const authSubmitBtn = document.getElementById("auth-submit-btn");
   const authForgotLink = document.getElementById("auth-forgot-link");
+  const authErrorMsg = document.getElementById("auth-error-msg");
+  const exportDataBtn = document.getElementById("export-data-btn");
+  const importDataFile = document.getElementById("import-data-file");
+
+  // Service Worker für echte iPhone / Android PWA-Installation registrieren
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+
+  // Lokales Backup (Export & Import als JSON-Datei auf dem Gerät)
+  if (exportDataBtn) {
+    exportDataBtn.addEventListener("click", () => {
+      const payload = {
+        app: "StreetC Pro",
+        exportedAt: new Date().toISOString(),
+        matrixLists: listManager.getLists(),
+        calcHistory: historyManager.getHistory(),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `streetc-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Backup-Datei heruntergeladen!");
+    });
+  }
+
+  if (importDataFile) {
+    importDataFile.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (Array.isArray(parsed.matrixLists)) {
+            localStorage.setItem("matrixLists", JSON.stringify(parsed.matrixLists));
+            listManager.lists = parsed.matrixLists;
+            listManager._migrateLegacyData();
+          }
+          if (Array.isArray(parsed.calcHistory)) {
+            localStorage.setItem("calcHistory", JSON.stringify(parsed.calcHistory));
+            historyManager.loadFromLocalStorage();
+          }
+          renderDashboard();
+          renderHistory();
+          showToast("Backup erfolgreich wiederhergestellt!");
+        } catch {
+          showToast("Ungültige Backup-Datei");
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
 
   let currentAuthMode = "login"; // "login" | "register"
   let firebaseAuthInstance = null;
   let firebaseFns = null;
+
+  function showAuthNotice(msg) {
+    if (!authErrorMsg) return;
+    if (!msg) {
+      authErrorMsg.classList.add("hidden");
+      authErrorMsg.textContent = "";
+    } else {
+      authErrorMsg.textContent = msg;
+      authErrorMsg.classList.remove("hidden");
+    }
+  }
 
   async function initFirebaseAuth() {
     try {
@@ -1458,9 +1525,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      showAuthNotice("");
       if (currentAuthMode === "login") {
         await firebaseFns.signInWithEmailAndPassword(firebaseAuthInstance, email, pass);
-        showToast("Erfolgreich eingeloggt!");
+        showToast("Erfolgreich bei StreetC eingeloggt!");
       } else {
         await firebaseFns.createUserWithEmailAndPassword(firebaseAuthInstance, email, pass);
         showToast("Account erfolgreich registriert!");
@@ -1468,7 +1536,16 @@ document.addEventListener("DOMContentLoaded", () => {
       authPasswordInput.value = "";
       authModal.classList.add("hidden");
     } catch (err) {
-      showToast(`Hinweis: ${err.code || err.message}`);
+      // Falls in Firebase Console "Email/Password" oder "streetc.netlify.app" noch nicht freigeschaltet wurde:
+      const code = err.code || "";
+      if (code.includes("unauthorized-domain") || code.includes("operation-not-allowed")) {
+        showAuthNotice(
+          `Firebase-Hinweis (${code}): Bitte in der Firebase-Konsole (Projekt taschenrechnerpro) unter Authentication -> Sign-in method "E-Mail/Passwort" aktivieren und unter Settings -> Authorized domains "streetc.netlify.app" eintragen.`
+        );
+      } else {
+        showAuthNotice(`Login-Hinweis: ${code || err.message}`);
+      }
+      showToast(`Hinweis: ${code || err.message}`);
     }
   });
 
